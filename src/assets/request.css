@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: aliceblue;
+}
+
+/* em 和 i 斜体的文字都不倾斜 */
+em,
+i {
+  font-style: normal
+}
+
+/* 去掉每个li前面的小圆点 */
+li {
+  list-style: none
+}
+
+img {
+  border: 0;
+  vertical-align: middle
+}
+
+
+button {
+  cursor: pointer
+}
