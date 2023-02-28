@@ -81,6 +81,106 @@ exports.sign = (req, res) => {
 
 }
 
+//用户权限数据接口
+exports.permission = (req, res) => {
+  const user = req.query.user;
+  if (user === '123') {
+    res.send({
+      "code": 0,
+      "message": "获取权限成功",
+      "data": [
+        {
+          "name": "订单管理",
+          "children": [
+            {
+              "name": "订单列表"
+            },
+            {
+              "name": "汇总清单"
+            },
+            {
+              "name": "订单审核"
+            }
+          ]
+        },
+        {
+          "name": "产品管理",
+          "children": [
+            {
+              "name": "产品列表"
+            },
+            {
+              "name": "产品分类"
+            },
+            {
+              "name": "添加商品"
+            }
+          ]
+        },
+        {
+          "name": "广告分类",
+          "children": [
+            {
+              "name": "广告列表"
+            }
+          ]
+        },
+        {
+          "name": "系统管理",
+          "children": [
+            {
+              "name": "部门管理"
+            },
+            {
+              "name": "角色管理"
+            }
+          ]
+        }
+      ]
+    })
+  } else {
+    res.send({
+      "code": 0,
+      "message": "获取权限成功",
+      "data": [
+        {
+          "name": "订单管理",
+          "children": [
+            {
+              "name": "订单列表"
+            },
+            {
+              "name": "汇总清单"
+            }
+          ]
+        },
+        {
+          "name": "产品管理",
+          "children": [
+            {
+              "name": "产品列表"
+            },
+            {
+              "name": "产品分类"
+            },
+            {
+              "name": "添加商品"
+            }
+          ]
+        },
+        {
+          "name": "广告分类",
+          "children": [
+            {
+              "name": "广告列表"
+            }
+          ]
+        }
+      ]
+    })
+  }
+}
+
 // 用户管理信息表
 exports.user = (req, res) => {
   res.send({

@@ -24,6 +24,9 @@ router.post('/login', logins.login)
 // 登录请求
 router.post('/sign', logins.sign)
 
+// 用户权限数据请求
+router.get('/permission', logins.permission)
+
 // 用户管理请求
 router.post('/user', logins.user)
 

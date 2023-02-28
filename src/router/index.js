@@ -32,48 +32,52 @@ const routes = [
     component: layout,
     children: [
       // 系统首页
-      { path: '/', component: home },
+      { path: '/', component: home, meta: { title: '系统首页' } },
       // 产品管理
       {
         path: '/products',
         component: products,
+        meta: { title: '产品管理' },
         children:
           [
-            { path: 'list', component: list },
-            { path: 'audit', component: audit },
+            { path: 'list', component: list, meta: { title: '产品列表' } },
+            { path: 'audit', component: audit, meta: { title: '产品审核' } },
             // 添加商品组件
-            { path: 'add', component: addProduct }
+            { path: 'add', component: addProduct, meta: { title: '添加商品' } }
           ]
       },
       // 订单管理
       {
         path: '/orders',
         component: orders,
+        meta: { title: '订单管理' },
         children:
           [
-            { path: 'list', component: ordersList },
-            { path: 'audit', component: ordersAudit },
-            { path: 'summary', component: ordersSummary }
+            { path: 'list', component: ordersList, meta: { title: '订单列表' } },
+            { path: 'audit', component: ordersAudit, meta: { title: '订单审核' } },
+            { path: 'summary', component: ordersSummary, meta: { title: '清单汇总' } }
           ]
       },
       // 广告分类
       {
         path: '/advertisement',
         component: advertisement,
+        meta: { title: '广告分类' },
         children:
           [
-            { path: 'list', component: adverList },
-            { path: 'audit', component: adverAudit }
+            { path: 'list', component: adverList, meta: { title: '广告列表' } },
+            { path: 'audit', component: adverAudit, meta: { title: '广告审核' } }
           ]
       },
       // 系统设置
       {
         path: '/setting',
         component: setting,
+        meta: { title: '系统设置' },
         children:
           [
-            { path: 'list', component: setList },
-            { path: 'audit', component: setAudit }
+            { path: 'list', component: setList, meta: { title: '选项一' } },
+            { path: 'audit', component: setAudit, meta: { title: '选项二' } }
           ]
       }
     ]
@@ -87,6 +91,8 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log('matched', to.matched)
+
   if (to.path === '/') {
     // 获取内存中的token值
     if (sessionStorage.getItem('token')) {
