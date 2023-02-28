@@ -78,6 +78,7 @@ const routes = [
       }
     ]
   },
+  // 配置登录路由
   { path: '/login', component: login }
 ]
 
