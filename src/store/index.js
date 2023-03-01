@@ -47,6 +47,9 @@ export default new Vuex.Store({
     // 用于控制动态导航
     add_plotter(state, value) {
       state.dynamic_navigation = value
+    },
+    remove_plotter(state) {
+      state.dynamic_navigation = []
     }
   },
   actions: {

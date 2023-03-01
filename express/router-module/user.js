@@ -110,10 +110,7 @@ exports.permission = (req, res) => {
               "name": "产品列表"
             },
             {
-              "name": "产品分类"
-            },
-            {
-              "name": "添加商品"
+              "name": "产品审核"
             }
           ]
         },
@@ -122,11 +119,14 @@ exports.permission = (req, res) => {
           "children": [
             {
               "name": "广告列表"
+            },
+            {
+              "name": "广告审核"
             }
           ]
         },
         {
-          "name": "系统管理",
+          "name": "系统设置",
           "children": [
             {
               "name": "部门管理"
@@ -141,7 +141,7 @@ exports.permission = (req, res) => {
   } else {
     res.send({
       "code": 0,
-      "message": "获取权限成功",
+      "message": "没有权限",
       "data": [
         {
           "name": "订单管理",
@@ -161,10 +161,7 @@ exports.permission = (req, res) => {
               "name": "产品列表"
             },
             {
-              "name": "产品分类"
-            },
-            {
-              "name": "添加商品"
+              "name": "产品审核"
             }
           ]
         },

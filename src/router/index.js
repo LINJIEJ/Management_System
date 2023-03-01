@@ -27,15 +27,17 @@ const setting = () => import('@/views/setting')
 const setList = () => import('@/views/setting/list')
 const setAudit = () => import('@/views/setting/audit')
 Vue.use(VueRouter)
-const originalPush = VueRouter.prototype.push
-VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err)
+// 解决编程式路由往同一地址跳转时会报错的情况
+const VueRouterPush = VueRouter.prototype.push
+
+VueRouter.prototype.push = function push(to) {
+  return VueRouterPush.call(this, to).catch(err => err)
 }
 const newRouter = {
   path: '/',
   // name: '/',
   component: layout,
-  meta: { title: '/', isloading: true },
+  meta: { title: '/' },
   children: [
     // 系统首页
     { path: '/', component: home, name: 'home', meta: { title: '系统首页', isloading: true } },
@@ -47,10 +49,10 @@ const newRouter = {
       meta: { title: '产品管理', isloading: true },
       children:
         [
-          { path: 'list', name: 'products_list', component: list, meta: { title: '产品列表', isloading: true } },
-          { path: 'audit', name: 'products_audit', component: audit, meta: { title: '产品审核', isloading: true } },
+          { path: '/products/list', name: 'products_list', component: list, meta: { title: '产品列表', isloading: true } },
+          { path: '/products/audit', name: 'products_audit', component: audit, meta: { title: '产品审核', isloading: true } },
           // 添加商品组件
-          { path: 'add', name: 'add', component: addProduct, meta: { title: '添加商品', isloading: true } }
+          { path: '/products/add', name: 'add', component: addProduct, meta: { title: '添加商品', isloading: true } }
         ]
     },
     // 订单管理
@@ -61,9 +63,9 @@ const newRouter = {
       meta: { title: '订单管理', isloading: true },
       children:
         [
-          { path: 'list', name: 'orders_list', component: ordersList, meta: { title: '订单列表', isloading: true } },
-          { path: 'audit', name: 'orders_audit', component: ordersAudit, meta: { title: '订单审核', isloading: true } },
-          { path: 'summary', name: 'orders_summary', component: ordersSummary, meta: { title: '清单汇总', isloading: true } }
+          { path: '/orders/list', name: 'orders_list', component: ordersList, meta: { title: '订单列表', isloading: true } },
+          { path: '/orders/audit', name: 'orders_audit', component: ordersAudit, meta: { title: '订单审核', isloading: true } },
+          { path: '/orders/summary', name: 'orders_summary', component: ordersSummary, meta: { title: '汇总清单', isloading: true } }
         ]
     },
     // 广告分类
@@ -74,8 +76,8 @@ const newRouter = {
       meta: { title: '广告分类', isloading: true },
       children:
         [
-          { path: 'list', name: 'advertisement_list', component: adverList, meta: { title: '广告列表', isloading: true } },
-          { path: 'audit', name: 'advertisement_audit', component: adverAudit, meta: { title: '广告审核', isloading: true } }
+          { path: '/advertisement/list', name: 'advertisement_list', component: adverList, meta: { title: '广告列表', isloading: true } },
+          { path: '/advertisement/audit', name: 'advertisement_audit', component: adverAudit, meta: { title: '广告审核', isloading: true } }
         ]
     },
     // 系统设置
@@ -86,8 +88,8 @@ const newRouter = {
       meta: { title: '系统设置', isloading: true },
       children:
         [
-          { path: 'list', component: setList, name: 'setting_list', meta: { title: '选项一', isloading: true } },
-          { path: 'audit', component: setAudit, name: 'setting_audit', meta: { title: '选项二', isloading: true } }
+          { path: '/setting/list', component: setList, name: 'setting_list', meta: { title: '部门管理', isloading: true } },
+          { path: '/setting/audit', component: setAudit, name: 'setting_audit', meta: { title: '角色管理', isloading: true } }
         ]
     }
   ]
@@ -111,7 +113,7 @@ router.beforeEach(async (to, from, next) => {
     if (sessionStorage.getItem('token')) {
       // 判断vuex中是否有动态导航   //没有动态导航，需添加
       if (store.state.dynamic_navigation.length === 0) {
-        const { data: res } = await permission()
+        const { data: res } = await permission({ user: store.state.username })
         // value1是前端完整路由，value2是后端传的动态路由
         const value_router = { value1: RouterChild, value2: res }
         const getRouter = await store.dispatch('add_actionsPlotter', value_router)

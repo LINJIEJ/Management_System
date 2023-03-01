@@ -31,7 +31,7 @@
 import left from '@/views/layout/left/left.vue'
 import right from '@/views/layout/right/right.vue'
 import dayjs from 'dayjs'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -46,6 +46,7 @@ export default {
     right
   },
   methods: {
+    ...mapMutations(['remove_plotter']),
     btn1() {
       this.$store.commit('btn1')
     },
@@ -56,6 +57,8 @@ export default {
     exit_login() {
       this.$router.replace('/login')
       sessionStorage.removeItem('Token')
+      // 清除vuex中的动态路由
+      this.$router.commit('remove_plotter')
     }
   },
   computed: {
@@ -73,9 +76,11 @@ export default {
     bottom: 0;
     background-color: #112f50;
   }
+
   .content {
     transition: all 0.5s;
     padding-left: 200px;
+
     .nav {
       width: auto;
       height: 35px;
@@ -86,9 +91,11 @@ export default {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+
       .cur {
         cursor: pointer;
       }
+
       button {
         border: none;
         height: 100%;
@@ -96,18 +103,22 @@ export default {
         background-color: aqua;
         color: blue;
       }
+
       .nav0 {
         height: 100%;
       }
+
       .span {
         display: inline-block;
         padding: 0 10px;
       }
     }
+
     .component {
       padding: 0 30px;
     }
   }
+
   .active {
     padding-left: 64px;
   }
