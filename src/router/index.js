@@ -3,85 +3,100 @@ import VueRouter from 'vue-router'
 import layout from '@/views/layout/index.vue'
 // 系统首页路由
 import home from '@/views/home/index.vue'
-// 产品管理路由
-import products from '@/views/products/index.vue'
-import list from '@/views/products/list/index.vue'
-import audit from '@/views/products/audit/index.vue'
-import addProduct from '@/views/products/list/addProduct.vue'
-// 订单管理路由
-import orders from '@/views/orders'
-import ordersList from '@/views/orders/list'
-import ordersSummary from '@/views/orders/summary'
-import ordersAudit from '@/views/orders/audit'
-// 广告分类管理
-import advertisement from '@/views/advertisement'
-import adverList from '@/views/advertisement/list'
-import adverAudit from '@/views/advertisement/audit'
-// 系统设置路由
-import setting from '@/views/setting'
-import setList from '@/views/setting/list'
-import setAudit from '@/views/setting/audit'
 // 登录页面路由
 import login from '@/views/login'
-
+import store from '@/store/index'
+// 获取后端的动态路由
+import { permission } from '@/api/class'
+// 产品管理路由
+const products = () => import('@/views/products/index.vue')
+const list = () => import('@/views/products/list/index.vue')
+const audit = () => import('@/views/products/audit/index.vue')
+const addProduct = () => import('@/views/products/list/addProduct.vue')
+// 订单管理路由
+const orders = () => import('@/views/orders')
+const ordersList = () => import('@/views/orders/list')
+const ordersSummary = () => import('@/views/orders/summary')
+const ordersAudit = () => import('@/views/orders/audit')
+// 广告分类管理
+const advertisement = () => import('@/views/advertisement')
+const adverList = () => import('@/views/advertisement/list')
+const adverAudit = () => import('@/views/advertisement/audit')
+// 系统设置路由
+const setting = () => import('@/views/setting')
+const setList = () => import('@/views/setting/list')
+const setAudit = () => import('@/views/setting/audit')
 Vue.use(VueRouter)
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+const newRouter = {
+  path: '/',
+  // name: '/',
+  component: layout,
+  meta: { title: '/', isloading: true },
+  children: [
+    // 系统首页
+    { path: '/', component: home, name: 'home', meta: { title: '系统首页', isloading: true } },
+    // 产品管理
+    {
+      path: '/products',
+      name: 'products',
+      component: products,
+      meta: { title: '产品管理', isloading: true },
+      children:
+        [
+          { path: 'list', name: 'products_list', component: list, meta: { title: '产品列表', isloading: true } },
+          { path: 'audit', name: 'products_audit', component: audit, meta: { title: '产品审核', isloading: true } },
+          // 添加商品组件
+          { path: 'add', name: 'add', component: addProduct, meta: { title: '添加商品', isloading: true } }
+        ]
+    },
+    // 订单管理
+    {
+      path: '/orders',
+      name: '/orders',
+      component: orders,
+      meta: { title: '订单管理', isloading: true },
+      children:
+        [
+          { path: 'list', name: 'orders_list', component: ordersList, meta: { title: '订单列表', isloading: true } },
+          { path: 'audit', name: 'orders_audit', component: ordersAudit, meta: { title: '订单审核', isloading: true } },
+          { path: 'summary', name: 'orders_summary', component: ordersSummary, meta: { title: '清单汇总', isloading: true } }
+        ]
+    },
+    // 广告分类
+    {
+      path: '/advertisement',
+      name: '/advertisement',
+      component: advertisement,
+      meta: { title: '广告分类', isloading: true },
+      children:
+        [
+          { path: 'list', name: 'advertisement_list', component: adverList, meta: { title: '广告列表', isloading: true } },
+          { path: 'audit', name: 'advertisement_audit', component: adverAudit, meta: { title: '广告审核', isloading: true } }
+        ]
+    },
+    // 系统设置
+    {
+      path: '/setting',
+      name: '/setting',
+      component: setting,
+      meta: { title: '系统设置', isloading: true },
+      children:
+        [
+          { path: 'list', component: setList, name: 'setting_list', meta: { title: '选项一', isloading: true } },
+          { path: 'audit', component: setAudit, name: 'setting_audit', meta: { title: '选项二', isloading: true } }
+        ]
+    }
+  ]
+}
+const RouterChild = newRouter.children.filter((ele) => {
+  return ele.path !== '/'
+})
 
 const routes = [
-  {
-    path: '/',
-    component: layout,
-    children: [
-      // 系统首页
-      { path: '/', component: home, meta: { title: '系统首页' } },
-      // 产品管理
-      {
-        path: '/products',
-        component: products,
-        meta: { title: '产品管理' },
-        children:
-          [
-            { path: 'list', component: list, meta: { title: '产品列表' } },
-            { path: 'audit', component: audit, meta: { title: '产品审核' } },
-            // 添加商品组件
-            { path: 'add', component: addProduct, meta: { title: '添加商品' } }
-          ]
-      },
-      // 订单管理
-      {
-        path: '/orders',
-        component: orders,
-        meta: { title: '订单管理' },
-        children:
-          [
-            { path: 'list', component: ordersList, meta: { title: '订单列表' } },
-            { path: 'audit', component: ordersAudit, meta: { title: '订单审核' } },
-            { path: 'summary', component: ordersSummary, meta: { title: '清单汇总' } }
-          ]
-      },
-      // 广告分类
-      {
-        path: '/advertisement',
-        component: advertisement,
-        meta: { title: '广告分类' },
-        children:
-          [
-            { path: 'list', component: adverList, meta: { title: '广告列表' } },
-            { path: 'audit', component: adverAudit, meta: { title: '广告审核' } }
-          ]
-      },
-      // 系统设置
-      {
-        path: '/setting',
-        component: setting,
-        meta: { title: '系统设置' },
-        children:
-          [
-            { path: 'list', component: setList, meta: { title: '选项一' } },
-            { path: 'audit', component: setAudit, meta: { title: '选项二' } }
-          ]
-      }
-    ]
-  },
   // 配置登录路由
   { path: '/login', component: login }
 ]
@@ -90,18 +105,30 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  console.log('matched', to.matched)
-
-  if (to.path === '/') {
-    // 获取内存中的token值
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.length === 0 || to.matched.some((ele) => { return ele.meta.isloading })) {
+    // 获取内存中的token值,判断是否登录了
     if (sessionStorage.getItem('token')) {
-      next()
+      // 判断vuex中是否有动态导航   //没有动态导航，需添加
+      if (store.state.dynamic_navigation.length === 0) {
+        const { data: res } = await permission()
+        // value1是前端完整路由，value2是后端传的动态路由
+        const value_router = { value1: RouterChild, value2: res }
+        const getRouter = await store.dispatch('add_actionsPlotter', value_router)
+        getRouter.unshift({ path: '/', name: 'home', component: home, meta: { title: '系统首页', isloading: true } })
+        newRouter.children = getRouter
+        // 这里可以遍历每一个路由,将遍历出来的路由通过router.addRoute添加进去
+        router.addRoute(newRouter)
+        console.log(newRouter)
+        next('/')
+      } else {
+        next()
+      }
     } else {
       next('/login')
     }
   } else {
-    next()
+    next()// 不需要登陆
   }
 })
 

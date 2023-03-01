@@ -8,6 +8,14 @@ export function course(params) {
   })
 }
 
+export function permission(params) {
+  return request({
+    method: 'get',
+    url: '/api/permission',
+    params
+  })
+}
+
 // 注册接口
 export function sign(data) {
   return request({
