@@ -63,4 +63,37 @@ router.post('/updateProduct', logins.updateProduct)
 // 批量删除列表数据请求
 router.post('/deletes', logins.deletes)
 
+// 获取所有树节点分类请求
+router.get('/getAllTreeList', logins.getAllTreeList)
+
+// 新增产品一级子分类请求
+router.post('/addFirstChildList', logins.addFirstChildList)
+
+// 新增产品子分类请求
+router.post('/addChildList', logins.addChildList)
+
+// 修改产品分类请求
+router.post('/updateChildList', logins.updateChildList)
+
+// 删除产品分类请求
+router.post('/removeChildList', logins.removeChildList)
+
+// 获取订单列表请求
+router.get('/goodsAlllist', logins.goodsAlllist)
+
+// 批量订单汇总按钮的请求
+router.post('/updategoodslist', logins.updategoodslist)
+
+// 获取订单汇总列表请求
+router.get('/collectAlllist', logins.collectAlllist)
+
+// 撤销汇总请求
+router.post('/removeCollectlist', logins.removeCollectlist)
+
+// 查询订单列表数据请求
+router.get('/checkGoodsList', logins.checkGoodsList)
+
+// 查询订单汇总数据请求
+router.get('/checkCollectList', logins.checkCollectList)
+
 module.exports = { router } 

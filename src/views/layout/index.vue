@@ -56,9 +56,9 @@ export default {
     // 退出登录
     exit_login() {
       this.$router.replace('/login')
-      sessionStorage.removeItem('Token')
+      sessionStorage.removeItem('token')
       // 清除vuex中的动态路由
-      this.$router.commit('remove_plotter')
+      this.remove_plotter()
     }
   },
   computed: {

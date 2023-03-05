@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import createParsistedState from 'vuex-persistedstate'
 import { rulesMenu } from '@/request/common'
+import createParsistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 
@@ -9,7 +9,16 @@ export default new Vuex.Store({
   // 配置将数据保存到本地内存中
   plugins: [createParsistedState({
     // 设置sessionStorage储存
-    storage: window.sessionStorage
+    storage: window.sessionStorage,
+    // 指定存储state中的属性
+    reducer(val) {
+      return {
+        username: val.username,
+        exit: val.exit,
+        title: val.title,
+        flag: val.flag
+      }
+    }
   })],
 
   state: {

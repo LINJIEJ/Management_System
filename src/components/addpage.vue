@@ -1,14 +1,8 @@
 <template>
   <div class="addpage">
-    <el-form
-      :model="ruleForm"
-      :rules="rules"
-      ref="ruleForm"
-      label-width="100px"
-      class="demo-ruleForm"
-    >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <el-form-item label="所属分类" prop="category">
-        <span>{{ ruleForm.category }}</span>
+        <span>{{ treenamed }}</span>
       </el-form-item>
       <el-form-item label="商品名称" prop="name">
         <el-input v-model="ruleForm.name"></el-input>
@@ -21,13 +15,9 @@
       </el-form-item>
       <!-- 添加时间 -->
       <el-form-item label="添加时间" prop="time">
-        <el-time-picker
-          v-model="time"
-          :picker-options="{
-            selectableRange: '18:30:00 - 20:30:00',
-          }"
-          placeholder="任意时间点"
-        >
+        <el-time-picker v-model="time" :picker-options="{
+          selectableRange: '00:00:00 - 24:00:00',
+        }" placeholder="任意时间点">
         </el-time-picker>
       </el-form-item>
 
@@ -36,14 +26,8 @@
       </el-form-item>
       <el-form-item label="商品图片" prop="img">
         <!-- 图片上传 -->
-        <el-upload
-          name:file
-          action="/api/Img"
-          list-type="picture-card"
-          :file-list="fileList"
-          ref="upload"
-          :on-success="handleAvatarSuccess"
-        >
+        <el-upload name:file action="/api/Img" list-type="picture-card" :file-list="fileList" ref="upload"
+          :on-success="handleAvatarSuccess">
           <i class="el-icon-plus"></i>
         </el-upload>
         <el-dialog :visible.sync="dialogVisible">
@@ -52,33 +36,18 @@
       </el-form-item>
       <el-form-item label="商品描述" prop="description">
         <!-- 富文本编辑器 -->
-        <Toolbar
-          style="border-bottom: 1px solid #ccc"
-          :editor="editor"
-          :defaultConfig="toolbarConfig"
-          :mode="mode"
-        />
-        <Editor
-          style="height: 300px; overflow-y: hidden"
-          v-model="html"
-          :defaultConfig="editorConfig"
-          :mode="mode"
-          @onCreated="onCreated"
-        />
+        <Toolbar style="border-bottom: 1px solid #ccc" :editor="editor" :defaultConfig="toolbarConfig" :mode="mode" />
+        <Editor style="height: 300px; overflow-y: hidden" v-model="html" :defaultConfig="editorConfig" :mode="mode"
+          @onCreated="onCreated" />
       </el-form-item>
       <!-- 开关 -->
       <el-form-item>
         <el-form-item label="是否上架商品" prop="isShow">
-          <el-switch
-            v-model="ruleForm.isShow"
-            active-color="#13ce66"
-          ></el-switch>
+          <el-switch v-model="istrue" active-color="#13ce66"></el-switch>
         </el-form-item>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')"
-          >立即创建</el-button
-        >
+        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
@@ -105,10 +74,10 @@ export default {
         selling: '',
         img: [],
         description: '',
-        isShow: true,
         // 添加时间属性
-        time: dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
+        time: ''
       },
+      istrue: true,
       // 上传的图片列表
       fileList: [],
       // 添加时间属性
@@ -124,9 +93,9 @@ export default {
       mode: 'default',
       // 表单规则
       rules: {
-        category: [
-          { required: true, message: '请输入所属分类', trigger: 'blur' }
-        ],
+        // category: [
+        //   { required: true, message: '请输入所属分类', trigger: 'blur' }
+        // ],
         name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         price: [{ required: true, message: '请输入商品价格', trigger: 'blur' }],
         number: [
@@ -150,9 +119,10 @@ export default {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             const { data: res } = await addProduct(this.ruleForm)
+            console.log(res)
             if (res.status === 200) {
               this.$message({
-                message: '修改商品成功',
+                message: '添加商品成功',
                 type: 'success'
               })
               // 进行路由页面跳转
@@ -226,6 +196,7 @@ export default {
       immediate: true,
       handler(newval) {
         this.ruleForm.category = newval
+        // this.ruleForm.time = this.time
       }
     },
     // 监听html中的数据
@@ -242,9 +213,10 @@ export default {
       this.ruleForm = { ...this.$store.state.exit }
     } else {
       this.ruleForm = {}
+      this.ruleForm.time = this.time
       // 清空图片的方法
       this.img = []
-      this.ruleForm.category = ''
+      // this.ruleForm.category = ''
       this.html = ''
     }
   },

@@ -3,11 +3,6 @@
     <!-- 侧边栏区域 -->
     <el-menu :default-active="activeIndex" class="el-menu-vertical-demo" background-color="#112f50" text-color="#f7f7f7"
       router :collapse="$store.state.flag">
-      <!-- 系统首页区域 -->
-      <!-- <el-menu-item index="/">
-        <i class="el-icon-menu"></i>
-        <span slot="title">系统首页</span>
-      </el-menu-item> -->
 
       <!-- 动态渲染路由组件 -->
       <DynamicComponents :value="dynamic_navigation"></DynamicComponents>
@@ -27,6 +22,11 @@ export default {
     return {
       activeIndex: this.$route.path
     }
+  },
+  created() {
+    // 删除原数组中的add路由
+    const addfilter = this.dynamic_navigation[1].children.splice(2, 1)
+    console.log(addfilter)
   },
   computed: {
     ...mapState(['dynamic_navigation'])

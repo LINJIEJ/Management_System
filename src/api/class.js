@@ -123,3 +123,102 @@ export function Img(data) {
     data
   })
 }
+
+// 获取所有树节点分类接口
+export function getAllTreeList(params) {
+  return request({
+    method: 'get',
+    url: '/api/getAllTreeList',
+    params
+  })
+}
+
+// 新增产品一级子分类接口
+export function addFirstChildList(data) {
+  return request({
+    method: 'post',
+    url: '/api/addFirstChildList',
+    data
+  })
+}
+
+// 新增产品子分类接口
+export function addChildList(data) {
+  return request({
+    method: 'post',
+    url: '/api/addChildList',
+    data
+  })
+}
+
+// 修改产品分类接口
+export function updateChildList(data) {
+  return request({
+    method: 'post',
+    url: '/api/updateChildList',
+    data
+  })
+}
+
+// 删除分类接口
+export function removeChildList(data) {
+  return request({
+    method: 'post',
+    url: '/api/removeChildList',
+    data
+  })
+}
+
+// 获取订单列表接口
+export function goodsAlllist(params) {
+  return request({
+    method: 'get',
+    url: '/api/goodsAlllist',
+    params
+  })
+}
+
+// 批量订单汇总按钮的接口
+export function updategoodslist(data) {
+  return request({
+    method: 'post',
+    url: '/api/updategoodslist',
+    data
+  })
+}
+
+// 获取订单汇总列表接口
+export function collectAlllist(params) {
+  return request({
+    method: 'get',
+    url: '/api/collectAlllist',
+    params
+  })
+}
+
+// 撤销汇总接口
+export function removeCollectlist(data) {
+  return request({
+    method: 'post',
+    url: '/api/removeCollectlist',
+    data
+  })
+}
+
+// 查询订单列表数据接口
+export function checkGoodsList(params) {
+  return request({
+    method: 'get',
+    url: '/api/checkGoodsList',
+    params
+  })
+}
+
+// 查询订单汇总数据接口
+export function checkCollectList(params) {
+  return request({
+    method: 'get',
+    url: '/api/checkCollectList',
+    params
+  })
+}

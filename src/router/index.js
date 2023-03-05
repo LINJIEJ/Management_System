@@ -8,6 +8,10 @@ import login from '@/views/login'
 import store from '@/store/index'
 // 获取后端的动态路由
 import { permission } from '@/api/class'
+// 导入进度条模块
+import nProgress from 'nprogress'
+// 导入进度条样式
+import 'nprogress/nprogress.css'
 // 产品管理路由
 const products = () => import('@/views/products/index.vue')
 const list = () => import('@/views/products/list/index.vue')
@@ -94,6 +98,7 @@ const newRouter = {
     }
   ]
 }
+
 const RouterChild = newRouter.children.filter((ele) => {
   return ele.path !== '/'
 })
@@ -108,6 +113,8 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+  // 开启进度条
+  nProgress.start()
   if (to.matched.length === 0 || to.matched.some((ele) => { return ele.meta.isloading })) {
     // 获取内存中的token值,判断是否登录了
     if (sessionStorage.getItem('token')) {
@@ -121,9 +128,15 @@ router.beforeEach(async (to, from, next) => {
         newRouter.children = getRouter
         // 这里可以遍历每一个路由,将遍历出来的路由通过router.addRoute添加进去
         router.addRoute(newRouter)
-        console.log(newRouter)
-        next('/')
+        next(to)
       } else {
+        // 判断页面是否刷新了
+        // if (from.matched.length === 0) {
+        //   router.addRoute(newRouter)
+        //   next()
+        //   console.log(routes)
+        //   return
+        // }
         next()
       }
     } else {
@@ -132,6 +145,11 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next()// 不需要登陆
   }
+})
+
+router.afterEach((to, from, next) => {
+  // 在将要进入页面时关闭进度条
+  nProgress.done()
 })
 
 export default router

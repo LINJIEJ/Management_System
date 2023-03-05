@@ -2,6 +2,7 @@ const db = require('../db/main')
 const bcryptjs = require('bcryptjs')
 const jsonwebtoken = require('jsonwebtoken')
 const mima = require('../Token/mima')
+const dayjs = require('dayjs')
 
 // 注册接口函数
 exports.login = (req, res) => {
@@ -111,6 +112,9 @@ exports.permission = (req, res) => {
             },
             {
               "name": "产品审核"
+            },
+            {
+              "name": "添加商品"
             }
           ]
         },
@@ -162,6 +166,9 @@ exports.permission = (req, res) => {
             },
             {
               "name": "产品审核"
+            },
+            {
+              "name": "添加商品"
             }
           ]
         },
@@ -451,5 +458,396 @@ exports.deletes = (req, res) => {
         message: "删除失败"
       })
     }
+  })
+}
+
+// 获取所有树节点分类接口
+exports.getAllTreeList = (req, res) => {
+  db.query('select * from tree_directory', (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    res.send({
+      status: 200,
+      data: request,
+      message: '获取所有树节点分类成功'
+    })
+  })
+}
+
+// 新增产品一级子分类接口
+exports.addFirstChildList = (req, res) => {
+  const name = req.body.name
+  const cid = Math.ceil(new Date().getTime() / 2000)
+  db.query("insert into tree_directory values (null,?,?,'1')", [name, cid], (err, result) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!name) {
+      return res.send({
+        status: 500,
+        message: '缺少name字段'
+      })
+    }
+    if (result.affectedRows !== 0) {
+      res.send({
+        status: 200,
+        message: "添加成功"
+      })
+    } else {
+      res.send({
+        status: 500,
+        message: "添加失败"
+      })
+    }
+  })
+}
+
+
+// 新增产品二级子分类接口
+exports.addChildList = (req, res) => {
+  const type = req.body.cid
+  const name = req.body.name
+  const cid = Math.ceil(new Date().getTime() / 1000)
+  db.query('insert into tree_directory values (null,?,?,?)', [name, cid, type], (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!type || !name) {
+      return res.send({
+        status: 500,
+        message: '缺少type和name字段'
+      })
+    }
+    if (request.affectedRows !== 0) {
+      res.send({
+        status: 200,
+        message: '新增产品子分类成功'
+      })
+    } else {
+      res.send({
+        status: 500,
+        message: '新增产品子分类失败'
+      })
+    }
+  })
+}
+
+// 修改产品二级分类接口
+exports.updateChildList = (req, res) => {
+  const id = req.body.id
+  const name = req.body.name
+  db.query('update tree_directory set name=? where id=?', [name, id], (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!id || !name) {
+      return res.send({
+        status: 500,
+        message: '缺少id和name字段'
+      })
+    }
+    if (request.affectedRows !== 0) {
+      res.send({
+        status: 200,
+        message: '修改产品子分类成功'
+      })
+    } else {
+      res.send({
+        status: 500,
+        message: '修改产品子分类失败'
+      })
+    }
+  })
+}
+
+// 删除产品二级分类接口
+exports.removeChildList = (req, res) => {
+  const id = req.body.id
+  db.query('delete from tree_directory where id=?', [id], (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!id) {
+      return res.send({
+        status: 500,
+        message: '缺少id字段'
+      })
+    }
+    if (request.affectedRows !== 0) {
+      res.send({
+        status: 200,
+        message: '删除产品子分类成功'
+      })
+    } else {
+      res.send({
+        status: 500,
+        message: '删除产品子分类失败'
+      })
+    }
+  })
+}
+
+// 获取订单列表接口
+exports.goodsAlllist = (req, res) => {
+  db.query('select * from goods_list', (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!req.query.page || !req.query.size) {
+      return res.send({
+        status: 500,
+        message: '请传page和size参数'
+      })
+    }
+    let curpage = Number(req.query.page)//当前页，前端传的页码
+    let pagesize = Number(req.query.size)//每页显示的数量
+    let pagenum = Math.ceil(request.length / pagesize)//返一个总页码
+    let totalsize = request.length
+    //这里是前端传参数返回的数据
+    let value = request.splice((curpage - 1) * pagesize, pagesize)//利用数组方法截取数据
+    res.send({
+      status: 200,
+      // 每页的条数
+      pagesize: pagesize,
+      // 当前页的页码
+      curpage: curpage,
+      // 总页码
+      pagenum: pagenum,
+      // 总条数
+      total: totalsize,
+      data: value,
+      message: '获取所有订单列表成功'
+    })
+  })
+}
+
+// 批量订单汇总按钮的接口
+exports.updategoodslist = (req, res) => {
+  let ids = req.body.ids
+  // 将对应的id的订单状态修改为2，已汇总状态
+  db.query(`update goods_list set state = '2' where id in (${ids})`, (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (request.affectedRows !== 0) {
+      db.query(`select * from goods_list where id in (${ids})`, (err, requests) => {
+        if (err) {
+          return res.send({
+            status: 500,
+            message: err
+          })
+        }
+        // 汇总后的总价
+        let sum = 0
+        requests.forEach(ele => {
+          sum += parseInt(ele.price)
+        })
+        // 汇总编号
+        let code = ~~(Math.random() * 1000000)
+        // 联系电话
+        let phone =
+          "151" + ~~(Math.random() * 1000000) + ~~(Math.random() * 100)
+        // 汇总时间
+        let collectTime = dayjs(new Date()).format('YYYY-MM-DD')
+        db.query(`insert into collect_list(collectNumber,phone,total,ids,person,time) values(${code},${phone},?,?,'布鲁斯',?)`, [sum, ids, collectTime], (err, requestes) => {
+          if (err) {
+            return res.send({
+              status: 500,
+              message: err
+            })
+          }
+          res.send({
+            status: 200,
+            message: '修改成功'
+          })
+        })
+      })
+    }
+
+  })
+}
+
+// 获取订单汇总列表接口
+exports.collectAlllist = (req, res) => {
+  db.query('select * from collect_list', (err, request) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!req.query.page || !req.query.size) {
+      return res.send({
+        status: 500,
+        message: '请传page和size参数'
+      })
+    }
+    let curpage = Number(req.query.page)//当前页，前端传的页码
+    let pagesize = Number(req.query.size)//每页显示的数量
+    let pagenum = Math.ceil(request.length / pagesize)//返一个总页码
+    let totalsize = request.length
+    //这里是前端传参数返回的数据
+    let value = request.splice((curpage - 1) * pagesize, pagesize)//利用数组方法截取数据
+    res.send({
+      status: 200,
+      // 每页的条数
+      pagesize: pagesize,
+      // 当前页的页码
+      curpage: curpage,
+      // 总页码
+      pagenum: pagenum,
+      // 总条数
+      total: totalsize,
+      data: value,
+      message: '获取所有汇总列表成功'
+    })
+  })
+}
+
+// 撤销汇总接口
+exports.removeCollectlist = (req, res) => {
+  //查询数据库
+  const id = req.body.id
+  if (!id) {
+    return res.send({
+      status: 500,
+      message: "缺少id参数"
+    })
+  }
+  //查询
+  db.query(`select ids from collect_list where id=${id}`, (err, arr) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    const ids = arr[0].ids
+    //删除
+    db.query(`delete from collect_list where id=${id}`, (err, result) => {
+      if (err) {
+        return res.send({
+          status: 500,
+          message: err
+        })
+      }
+      //修改
+      db.query(`update goods_list set state='1' where id in (${ids})`, (err, data) => {
+        if (err) {
+          return res.send({
+            status: 500,
+            message: err
+          })
+        }
+        if (data.affectedRows > 0) {
+          res.send({
+            status: 200,
+            msg: "修改成功"
+          })
+        } else {
+          res.send({
+            status: 500,
+            msg: "修改失败"
+          })
+        }
+      })
+    })
+
+  })
+}
+
+// 查询订单列表数据接口
+exports.checkGoodsList = (req, res) => {
+  db.query('select * from goods_list where goodsId = ? and time = ?', [req.query.goodsId, req.query.time], (err, result) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!req.query.goodsId || !req.query.time || !req.query.page || !req.query.size) {
+      return res.send({
+        status: 500,
+        message: '缺少goodsId和time和page和size参数'
+      })
+    }
+    let curpage = Number(req.query.page)//当前页，前端传的页码
+    let pagesize = Number(req.query.size)//每页显示的数量
+    let pagenum = Math.ceil(result.length / pagesize)//返一个总页码
+    let totalsize = result.length
+    //这里是前端传参数返回的数据
+    let value = result.splice((curpage - 1) * pagesize, pagesize)//利用数组方法截取数据
+    res.send({
+      status: 200,
+      // 每页的条数
+      pagesize: pagesize,
+      // 当前页的页码
+      curpage: curpage,
+      // 总页码
+      pagenum: pagenum,
+      // 总条数
+      total: totalsize,
+      data: value,
+      message: '查询订单数据成功'
+    })
+  })
+}
+
+// 查询订单汇总数据接口
+exports.checkCollectList = (req, res) => {
+  db.query('select * from collect_list where collectNumber = ? and time = ?', [req.query.collectId, req.query.time], (err, result) => {
+    if (err) {
+      return res.send({
+        status: 500,
+        message: err
+      })
+    }
+    if (!req.query.collectId || !req.query.time || !req.query.page || !req.query.size) {
+      return res.send({
+        status: 500,
+        message: '缺少goodsId和time和page和size参数'
+      })
+    }
+    let curpage = Number(req.query.page)//当前页，前端传的页码
+    let pagesize = Number(req.query.size)//每页显示的数量
+    let pagenum = Math.ceil(result.length / pagesize)//返一个总页码
+    let totalsize = result.length
+    //这里是前端传参数返回的数据
+    let value = result.splice((curpage - 1) * pagesize, pagesize)//利用数组方法截取数据
+    res.send({
+      status: 200,
+      // 每页的条数
+      pagesize: pagesize,
+      // 当前页的页码
+      curpage: curpage,
+      // 总页码
+      pagenum: pagenum,
+      // 总条数
+      total: totalsize,
+      data: value,
+      message: '查询订单数据成功'
+    })
   })
 }

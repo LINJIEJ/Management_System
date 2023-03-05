@@ -1,8 +1,8 @@
 <template>
-  <div class="DynamicComponents">
+  <fragment class="DynamicComponents">
     <template v-for="item in value">
       <!-- 一级路由 -->
-      <el-menu-item @click="topage(item.path)" :index="item.path" v-if="!item.children" :key="item.name">
+      <el-menu-item @click="toPage(item.path)" :index="item.path" v-if="!item.children" :key="item.name">
         <i class="el-icon-menu"></i>
         <span slot="title">{{ item.meta.title }}</span>
       </el-menu-item>
@@ -18,7 +18,7 @@
         </el-menu-item-group>
       </el-submenu>
     </template>
-  </div>
+  </fragment>
 </template>
 
 <script>
